@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conhecendo as sílabas com o lobo Guará</title>
+    <title>Lobo Guará - Missão Sílabas</title>
     <style>
         :root { --bg-color: #ffffff; }
         body {
@@ -29,7 +29,7 @@
             position: fixed; width: 55px; height: 55px;
             pointer-events: none; background-image: url('peca.png');
             background-size: contain; background-repeat: no-repeat;
-            z-index: 9998; animation: sumir 1.5s forwards;
+            z-index: 9998; animation: sumir 0.8s forwards;
         }
         @keyframes sumir { 0%{opacity:1; transform:scale(1);} 100%{opacity:0; transform:scale(0.5);} }
         .area-desenho {
@@ -41,19 +41,18 @@
         svg { width: 100%; height: 100%; }
         .caminho-interativo {
             fill: none; stroke:#545658;
-            stroke-width: 25; stroke-linecap: round; stroke-linejoin: round;
-            cursor: pointer; transition: stroke 0.3s;
-            filter: drop-shadow(3px 3px 2px rgba(0,0,0,0.3)); /* SOMBRA RECUPERADA */
+            stroke-width: 28; stroke-linecap: round; stroke-linejoin: round;
+            cursor: pointer; transition: stroke 0.2s;
         }
         #soma-texto { font-size: 3rem; margin: 10px 0; color: #333; }
         .animar-soma { animation: pulse 0.5s infinite alternate; color: #E91E63 !important; }
         @keyframes pulse { from{transform:scale(1);} to{transform:scale(1.1);} }
         #destaque-palavra {
             font-size: 4rem; font-weight: bold; margin-top: 10px;
-            display: none; color: #1976D2;
+            display: none; color: #1976D2; align-items: center; justify-content: center;
         }
-        #destaque-palavra.show { display: flex; align-items: center; gap: 20px; animation: bounceIn 0.8s; }
-        #emoji-imagem { width: 100px; height: 100px; object-fit: contain; }
+        #destaque-palavra.show { display: flex; animation: bounceIn 0.8s; }
+        #emoji-imagem { width: 100px; height: 100px; object-fit: contain; margin-left: 20px; }
         #btn-proximo {
             display: none; padding: 20px 50px; font-size: 2rem;
             background: #4CAF50; color: white; border: none;
@@ -65,37 +64,40 @@
 <body>
 
     <img src="lobo.png" id="cursor-lobo">
-    
     <div id="instrucao-topo"></div>
-
     <div id="soma-texto"></div>
     <div class="area-desenho"><svg id="svg-alfabeto"></svg></div>
     
     <div id="destaque-palavra">
         <span id="texto-palavra"></span>
-        <img id="emoji-imagem" src="" alt="emoji">
+        <img id="emoji-imagem" src="" alt="">
     </div>
 
     <button id="btn-proximo" onclick="irParaProxima()">PRÓXIMA MISSÃO! ➔</button>
 
+    <audio id="somEscrita" src="escrevendo.mp3" preload="auto"></audio>
+
     <script>
-        const somClique = new Audio('escrevendo');
+        const somEscrita = document.getElementById('somEscrita');
+        somEscrita.playbackRate = 1.5; // Acelera um pouco o som para ficar mais dinâmico
+
         let dadosJogo = {};
         const urlParams = new URLSearchParams(window.location.search);
-        const silabaAtualId = urlParams.get('10s') || 'BA';
+        const silabaAtualId = urlParams.get('s') || 'BA';
 
-        fetch('dados.json').then(r => r.json()).then(data => {
-            dadosJogo = data;
-            iniciarFase(data[silabaAtualId]);
-        });
+        fetch('dados.json')
+            .then(r => r.json())
+            .then(data => {
+                dadosJogo = data;
+                iniciarFase(data[silabaAtualId]);
+            });
 
         function iniciarFase(c) {
+            if(!c) return;
             document.body.style.setProperty('--bg-color', c.cor_fundo);
             document.getElementById('soma-texto').innerText = c.soma_texto;
             document.getElementById('texto-palavra').innerText = c.palavra;
-            
-            // INSTRUÇÃO DINÂMICA
-            document.getElementById('instrucao-topo').innerText = `Clique nas letras para aprender a sílaba ${silabaAtualId}`;
+            document.getElementById('instrucao-topo').innerText = `Pinte a sílaba ${silabaAtualId}`;
             
             const imgEmoji = document.getElementById('emoji-imagem');
             if(c.emoji.includes('.png')) { 
@@ -103,9 +105,11 @@
                 imgEmoji.style.display = 'block';
             } else { 
                 imgEmoji.style.display = 'none'; 
-                document.getElementById('destaque-palavra').innerHTML += `<span id="emoji-span" style="font-size:80px">${c.emoji}</span>`; 
+                const d = document.getElementById('destaque-palavra');
+                if(!document.getElementById('emoji-temp')){
+                    d.innerHTML += `<span id="emoji-temp" style="font-size:80px; margin-left:20px">${c.emoji}</span>`;
+                }
             }
-            
             desenharLetras(c);
         }
 
@@ -119,38 +123,43 @@
                 const i = document.createElementNS("http://www.w3.org/2000/svg", "path");
                 i.setAttribute("d", path);
                 i.setAttribute("class", "caminho-interativo");
-                const p = () => {
-                    if (i.style.stroke === "" || i.style.stroke === "#00aee0") {
+                
+                const pintar = () => {
+                    if (i.style.stroke === "" || i.style.stroke === "rgb(84, 86, 88)") {
                         i.style.stroke = c.cor_contorno;
-                        somClique.play();
+                        
+                        // EFEITO DE SOM SINCRONIZADO:
+                        // Se o som já estiver tocando, ele reinicia do zero bem rápido
+                        somEscrita.currentTime = 0; 
+                        somEscrita.play();
+                        
                         pintados++;
-                        if (pintados === c.caminhos.length) falar(c.fala_didatica);
+                        if (pintados === c.caminhos.length) {
+                            setTimeout(() => falar(c.fala_didatica), 500);
+                        }
                     }
                 };
-                i.addEventListener('mouseenter', p);
-                i.addEventListener('touchstart', p);
+                i.addEventListener('mouseenter', pintar);
+                i.addEventListener('touchstart', (e) => { e.preventDefault(); pintar(); });
                 svg.appendChild(i);
             });
         }
 
         function falar(t) {
             const utter = new SpeechSynthesisUtterance(t);
-            utter.lang = 'pt-BR'; utter.rate = 0.85;
+            utter.lang = 'pt-BR'; 
+            utter.rate = 0.9;
             document.getElementById('soma-texto').classList.add('animar-soma');
-            utter.onboundary = (e) => {
-                if (t.substring(0, e.charIndex + e.charLength).includes("De")) {
-                    document.getElementById('destaque-palavra').classList.add('show');
-                }
-            };
+            
             utter.onend = () => {
                 document.getElementById('soma-texto').classList.remove('animar-soma');
+                document.getElementById('destaque-palavra').classList.add('show');
                 document.getElementById('btn-proximo').style.display = "block";
             };
             window.speechSynthesis.speak(utter);
         }
 
         function irParaProxima() {
-            somClique.play();
             const proximo = dadosJogo[silabaAtualId].proximo;
             if (proximo === "FIM") {
                 window.location.href = 'final.html';
@@ -163,12 +172,13 @@
         document.addEventListener('mousemove', (e) => {
             lobo.style.left = e.clientX + 'px';
             lobo.style.top = e.clientY + 'px';
+            
             const peca = document.createElement('div');
             peca.className = 'rastro-peca';
             peca.style.left = (e.clientX - 25) + 'px';
             peca.style.top = (e.clientY - 25) + 'px';
             document.body.appendChild(peca);
-            setTimeout(() => peca.remove(), 1500);
+            setTimeout(() => peca.remove(), 800);
         });
     </script>
 </body>
