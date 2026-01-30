@@ -169,17 +169,31 @@
         }
 
         const lobo = document.getElementById('cursor-lobo');
-        document.addEventListener('mousemove', (e) => {
-            lobo.style.left = e.clientX + 'px';
-            lobo.style.top = e.clientY + 'px';
+
+        // Função única para criar o rastro
+        function criarRastro(x, y) {
+            lobo.style.left = x + 'px';
+            lobo.style.top = y + 'px';
             
             const peca = document.createElement('div');
             peca.className = 'rastro-peca';
-            peca.style.left = (e.clientX - 25) + 'px';
-            peca.style.top = (e.clientY - 25) + 'px';
+            peca.style.left = (x - 25) + 'px';
+            peca.style.top = (y - 25) + 'px';
             document.body.appendChild(peca);
             setTimeout(() => peca.remove(), 800);
+        }
+
+        // Rastro para Computador (Mouse)
+        document.addEventListener('mousemove', (e) => {
+            criarRastro(e.clientX, e.clientY);
         });
+
+        // Rastro para Celular (Toque)
+        document.addEventListener('touchmove', (e) => {
+            // O celular pode ter vários toques, pegamos o primeiro [0]
+            const touch = e.touches[0];
+            criarRastro(touch.clientX, touch.clientY);
+        }, {passive: false});
     </script>
 </body>
 </html>

@@ -27,29 +27,25 @@
         }
         @keyframes sumir { 0%{opacity:1; transform:rotate(0deg);} 100%{opacity:0; transform:rotate(360deg) scale(0);} }
         header { text-align: center; margin: 30px 0; }
-        h1 { color: #1976D2; font-size: 3rem; text-shadow: 3px 3px 0 white; }
+        h1 { color: #1565C0; font-size: 3rem; text-shadow: 2px 2px white; margin: 0; }
+        p { font-size: 1.5rem; color: #546E7A; }
         .grid-familias {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px; width: 90%; max-width: 1200px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px; width: 90%; max-width: 1200px;
         }
         .cartao-familia {
-            background: white; border-radius: 30px; padding: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            border: 6px solid #BBDEFB; transition: transform 0.3s;
+            background: white; border-radius: 20px; padding: 20px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1); border-bottom: 5px solid #64B5F6;
         }
-        .cartao-familia:hover { transform: scale(1.03); }
-        .titulo-familia {
-            font-size: 1.8rem; color: #0D47A1; margin-bottom: 15px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .botoes-silabas { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .titulo-familia { font-size: 1.8rem; color: #1976D2; margin-bottom: 15px; border-bottom: 2px dashed #BBDEFB; padding-bottom: 5px; }
+        .botoes-silabas { display: flex; flex-wrap: wrap; gap: 10px; }
         .btn-silaba {
-            background: #FFD54F; color: #5D4037;
-            padding: 12px 20px; border-radius: 15px;
-            text-decoration: none; font-size: 1.5rem; font-weight: bold;
-            box-shadow: 0 6px 0 #FFA000; transition: all 0.2s;
+            text-decoration: none; background: #FFEB3B; color: #333;
+            font-weight: bold; font-size: 1.5rem; padding: 10px 20px;
+            border-radius: 12px; border-bottom: 4px solid #FBC02D;
+            transition: 0.2s;
         }
-        .btn-silaba:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #FFA000; background: #FFECB3; }
+        .btn-silaba:hover { transform: translateY(-5px); background: #FFF176; }
     </style>
 </head>
 <body>
@@ -57,21 +53,25 @@
     <img src="lobo.png" id="cursor-lobo">
 
     <header>
-        <h1>ALFABETIZAÇÃO DO LOBO 🐺</h1>
-        <p style="font-size: 1.2rem; color: #555;">Escolha uma família de sílabas para começar a aventura!</p>
+        <h1>Lobo Guará</h1>
+        <p>Escolha uma missão e vamos aprender!</p>
     </header>
 
-    <div class="grid-familias" id="grid"></div>
+    <div class="grid-familias" id="grid-familias"></div>
+
+    <audio id="somEscrita" src="escrevendo.mp3" preload="auto"></audio>
 
     <script>
-        const grid = document.getElementById('grid');
-        const somClique = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
+        const somEscrita = document.getElementById('somEscrita');
+        const grid = document.getElementById('grid-familias');
+
         const familias = [
-            {letra: 'B', emoji: '🐺'}, {letra: 'C', emoji: '🦀'}, {letra: 'D', emoji: '🦕'},
-            {letra: 'F', emoji: '🎡'}, {letra: 'G', emoji: '🐱'}, {letra: 'H', emoji: '🚁'},
-            {letra: 'J', emoji: '🐢'}, {letra: 'K', emoji: '🍎'}, {letra: 'L', emoji: '🦁'},
-            {letra: 'M', emoji: '🐵'}, {letra: 'N', emoji: '🚢'}, {letra: 'P', emoji: '🐼'},
-            {letra: 'Q', emoji: '🧀', especial: ['QUA', 'QUE', 'QUI', 'QUO']},
+            {letra: 'B', emoji: '🐳'}, {letra: 'C', emoji: '🏠'},
+            {letra: 'D', emoji: '🎲'}, {letra: 'F', emoji: '🍓'},
+            {letra: 'G', emoji: '🐱'}, {letra: 'H', emoji: '🚁'},
+            {letra: 'J', emoji: '🐊'}, {letra: 'L', emoji: '🦁'},
+            {letra: 'M', emoji: '🐵'}, {letra: 'N', emoji: '☁️'},
+            {letra: 'P', emoji: '🍿'}, {letra: 'Q', emoji: '🧀', especial: ['QUA', 'QUE', 'QUI', 'QUO']},
             {letra: 'R', emoji: '🐭'}, {letra: 'S', emoji: '🐸'},
             {letra: 'T', emoji: '🐯'}, {letra: 'V', emoji: '🐄'},
             {letra: 'X', emoji: '🎷'}, {letra: 'Z', emoji: '🦓'}
@@ -84,23 +84,37 @@
             const silabas = f.especial ? f.especial : ['A', 'E', 'I', 'O', 'U'].map(v => f.letra + v);
             
             silabas.forEach(silaba => {
-                botoesHtml += `<a href="fase.html?s=${silaba}" class="btn-silaba" onclick="somClique.play()">${silaba}</a>`;
+                // Ao clicar, toca o som antes de mudar de página
+                botoesHtml += `<a href="fase.html?s=${silaba}" class="btn-silaba" onclick="tocarSom(event, this)">${silaba}</a>`;
             });
 
             card.innerHTML = `<div class="titulo-familia">Letra ${f.letra} ${f.emoji}</div><div class="botoes-silabas">${botoesHtml}</div>`;
             grid.appendChild(card);
         });
 
+        function tocarSom(event, element) {
+            event.preventDefault(); // Para o link por um segundo
+            const url = element.href;
+            somEscrita.currentTime = 0;
+            somEscrita.play();
+            
+            // Espera o som começar e muda de página rápido
+            setTimeout(() => {
+                window.location.href = url;
+            }, 150);
+        }
+
         const lobo = document.getElementById('cursor-lobo');
         document.addEventListener('mousemove', (e) => {
             lobo.style.left = e.clientX + 'px';
             lobo.style.top = e.clientY + 'px';
+            
             const peca = document.createElement('div');
             peca.className = 'rastro-peca';
-            peca.style.left = (e.clientX - 22) + 'px';
-            peca.style.top = (e.clientY - 22) + 'px';
+            peca.style.left = (e.clientX - 25) + 'px';
+            peca.style.top = (e.clientY - 25) + 'px';
             document.body.appendChild(peca);
-            setTimeout(() => peca.remove(), 1200);
+            setTimeout(() => peca.remove(), 1000);
         });
     </script>
 </body>
