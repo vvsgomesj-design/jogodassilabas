@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lobo Guará - Missão Sílabas</title>
+    <title>Conhecendo as sílabas com o lobo Guará</title>
     <style>
         :root { --bg-color: #ffffff; }
         body {
@@ -79,10 +79,10 @@
     <button id="btn-proximo" onclick="irParaProxima()">PRÓXIMA MISSÃO! ➔</button>
 
     <script>
-        const somClique = new Audio('');
+        const somClique = new Audio('escrevendo');
         let dadosJogo = {};
         const urlParams = new URLSearchParams(window.location.search);
-        const silabaAtualId = urlParams.get('s') || 'BA';
+        const silabaAtualId = urlParams.get('10s') || 'BA';
 
         fetch('dados.json').then(r => r.json()).then(data => {
             dadosJogo = data;
@@ -172,5 +172,4 @@
         });
     </script>
 </body>
-
 </html>
