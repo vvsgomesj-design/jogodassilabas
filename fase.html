@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lobo Guará - Missão Sílabas</title>
+    <style>
+        :root { --bg-color: #ffffff; }
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: var(--bg-color);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-start;
+            height: 100vh; overflow: hidden;
+            cursor: none;
+        }
+        #instrucao-topo {
+            font-size: 1.8rem; color: #1565C0; background: white;
+            padding: 10px 30px; border-radius: 50px; margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 3px solid #64B5F6;
+        }
+        #cursor-lobo {
+            position: fixed; width: 70px; height: auto;
+            pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+        .rastro-peca {
+            position: fixed; width: 55px; height: 55px;
+            pointer-events: none; background-image: url('peca.png');
+            background-size: contain; background-repeat: no-repeat;
+            z-index: 9998; animation: sumir 1.5s forwards;
+        }
+        @keyframes sumir { 0%{opacity:1; transform:scale(1);} 100%{opacity:0; transform:scale(0.5);} }
+        .area-desenho {
+            margin-top: 15px; width: 85%; height: 35vh;
+            background: rgba(255,255,255,0.8);
+            border-radius: 30px; border: 10px dashed #ccc;
+            display: flex; align-items: center; justify-content: center;
+        }
+        svg { width: 100%; height: 100%; }
+        .caminho-interativo {
+            fill: none; stroke:#545658;
+            stroke-width: 25; stroke-linecap: round; stroke-linejoin: round;
+            cursor: pointer; transition: stroke 0.3s;
+            filter: drop-shadow(3px 3px 2px rgba(0,0,0,0.3)); /* SOMBRA RECUPERADA */
+        }
+        #soma-texto { font-size: 3rem; margin: 10px 0; color: #333; }
+        .animar-soma { animation: pulse 0.5s infinite alternate; color: #E91E63 !important; }
+        @keyframes pulse { from{transform:scale(1);} to{transform:scale(1.1);} }
+        #destaque-palavra {
+            font-size: 4rem; font-weight: bold; margin-top: 10px;
+            display: none; color: #1976D2;
+        }
+        #destaque-palavra.show { display: flex; align-items: center; gap: 20px; animation: bounceIn 0.8s; }
+        #emoji-imagem { width: 100px; height: 100px; object-fit: contain; }
+        #btn-proximo {
+            display: none; padding: 20px 50px; font-size: 2rem;
+            background: #4CAF50; color: white; border: none;
+            border-radius: 20px; cursor: none; margin-top: 15px;
+            box-shadow: 0 10px 0 #2E7D32;
+        }
+    </style>
+</head>
+<body>
+
+    <img src="lobo.png" id="cursor-lobo">
+    
+    <div id="instrucao-topo"></div>
+
+    <div id="soma-texto"></div>
+    <div class="area-desenho"><svg id="svg-alfabeto"></svg></div>
+    
+    <div id="destaque-palavra">
+        <span id="texto-palavra"></span>
+        <img id="emoji-imagem" src="" alt="emoji">
+    </div>
+
+    <button id="btn-proximo" onclick="irParaProxima()">PRÓXIMA MISSÃO! ➔</button>
+
+    <script>
+        const somClique = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3');
+        let dadosJogo = {};
+        const urlParams = new URLSearchParams(window.location.search);
+        const silabaAtualId = urlParams.get('s') || 'BA';
+
+        fetch('dados.json').then(r => r.json()).then(data => {
+            dadosJogo = data;
+            iniciarFase(data[silabaAtualId]);
+        });
+
+        function iniciarFase(c) {
+            document.body.style.setProperty('--bg-color', c.cor_fundo);
+            document.getElementById('soma-texto').innerText = c.soma_texto;
+            document.getElementById('texto-palavra').innerText = c.palavra;
+            
+            // INSTRUÇÃO DINÂMICA
+            document.getElementById('instrucao-topo').innerText = `Clique nas letras para aprender a sílaba ${silabaAtualId}`;
+            
+            const imgEmoji = document.getElementById('emoji-imagem');
+            if(c.emoji.includes('.png')) { 
+                imgEmoji.src = c.emoji; 
+                imgEmoji.style.display = 'block';
+            } else { 
+                imgEmoji.style.display = 'none'; 
+                document.getElementById('destaque-palavra').innerHTML += `<span id="emoji-span" style="font-size:80px">${c.emoji}</span>`; 
+            }
+            
+            desenharLetras(c);
+        }
+
+        function desenharLetras(c) {
+            const svg = document.getElementById('svg-alfabeto');
+            svg.setAttribute("viewBox", c.viewBox || "0 0 400 200");
+            svg.innerHTML = '';
+            let pintados = 0;
+
+            c.caminhos.forEach(path => {
+                const i = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                i.setAttribute("d", path);
+                i.setAttribute("class", "caminho-interativo");
+                const p = () => {
+                    if (i.style.stroke === "" || i.style.stroke === "#00aee0") {
+                        i.style.stroke = c.cor_contorno;
+                        somClique.play();
+                        pintados++;
+                        if (pintados === c.caminhos.length) falar(c.fala_didatica);
+                    }
+                };
+                i.addEventListener('mouseenter', p);
+                i.addEventListener('touchstart', p);
+                svg.appendChild(i);
+            });
+        }
+
+        function falar(t) {
+            const utter = new SpeechSynthesisUtterance(t);
+            utter.lang = 'pt-BR'; utter.rate = 0.85;
+            document.getElementById('soma-texto').classList.add('animar-soma');
+            utter.onboundary = (e) => {
+                if (t.substring(0, e.charIndex + e.charLength).includes("De")) {
+                    document.getElementById('destaque-palavra').classList.add('show');
+                }
+            };
+            utter.onend = () => {
+                document.getElementById('soma-texto').classList.remove('animar-soma');
+                document.getElementById('btn-proximo').style.display = "block";
+            };
+            window.speechSynthesis.speak(utter);
+        }
+
+        function irParaProxima() {
+            somClique.play();
+            const proximo = dadosJogo[silabaAtualId].proximo;
+            if (proximo === "FIM") {
+                window.location.href = 'final.html';
+            } else {
+                window.location.href = `fase.html?s=${proximo}`;
+            }
+        }
+
+        const lobo = document.getElementById('cursor-lobo');
+        document.addEventListener('mousemove', (e) => {
+            lobo.style.left = e.clientX + 'px';
+            lobo.style.top = e.clientY + 'px';
+            const peca = document.createElement('div');
+            peca.className = 'rastro-peca';
+            peca.style.left = (e.clientX - 25) + 'px';
+            peca.style.top = (e.clientY - 25) + 'px';
+            document.body.appendChild(peca);
+            setTimeout(() => peca.remove(), 1500);
+        });
+    </script>
+</body>
+</html>

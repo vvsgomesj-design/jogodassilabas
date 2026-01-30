@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lobo Guará - Menu de Missões</title>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: #E3F2FD;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-start;
+            min-height: 100vh; overflow-x: hidden;
+            cursor: none; padding-bottom: 50px;
+        }
+        #cursor-lobo {
+            position: fixed; width: 60px; height: auto;
+            pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+        .rastro-peca {
+            position: fixed; width: 45px; height: 45px;
+            pointer-events: none; background-image: url('peca.png');
+            background-size: contain; background-repeat: no-repeat;
+            z-index: 9998; animation: sumir 1.2s forwards;
+        }
+        @keyframes sumir { 0%{opacity:1; transform:rotate(0deg);} 100%{opacity:0; transform:rotate(360deg) scale(0);} }
+        header { text-align: center; margin: 30px 0; }
+        h1 { color: #1976D2; font-size: 3rem; text-shadow: 3px 3px 0 white; }
+        .grid-familias {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px; width: 90%; max-width: 1200px;
+        }
+        .cartao-familia {
+            background: white; border-radius: 30px; padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border: 6px solid #BBDEFB; transition: transform 0.3s;
+        }
+        .cartao-familia:hover { transform: scale(1.03); }
+        .titulo-familia {
+            font-size: 1.8rem; color: #0D47A1; margin-bottom: 15px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .botoes-silabas { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .btn-silaba {
+            background: #FFD54F; color: #5D4037;
+            padding: 12px 20px; border-radius: 15px;
+            text-decoration: none; font-size: 1.5rem; font-weight: bold;
+            box-shadow: 0 6px 0 #FFA000; transition: all 0.2s;
+        }
+        .btn-silaba:hover { transform: translateY(-3px); box-shadow: 0 9px 0 #FFA000; background: #FFECB3; }
+    </style>
+</head>
+<body>
+
+    <img src="lobo.png" id="cursor-lobo">
+
+    <header>
+        <h1>ALFABETIZAÇÃO DO LOBO 🐺</h1>
+        <p style="font-size: 1.2rem; color: #555;">Escolha uma família de sílabas para começar a aventura!</p>
+    </header>
+
+    <div class="grid-familias" id="grid"></div>
+
+    <script>
+        const grid = document.getElementById('grid');
+        const somClique = new Audio('');
+        const familias = [
+            {letra: 'B', emoji: '🐺'}, {letra: 'C', emoji: '🦀'}, {letra: 'D', emoji: '🦕'},
+            {letra: 'F', emoji: '🎡'}, {letra: 'G', emoji: '🐱'}, {letra: 'H', emoji: '🚁'},
+            {letra: 'J', emoji: '🐢'}, {letra: 'K', emoji: '🍎'}, {letra: 'L', emoji: '🦁'},
+            {letra: 'M', emoji: '🐵'}, {letra: 'N', emoji: '🚢'}, {letra: 'P', emoji: '🐼'},
+            {letra: 'Q', emoji: '🧀', especial: ['QUA', 'QUE', 'QUI', 'QUO']},
+            {letra: 'R', emoji: '🐭'}, {letra: 'S', emoji: '🐸'},
+            {letra: 'T', emoji: '🐯'}, {letra: 'V', emoji: '🐄'},
+            {letra: 'X', emoji: '🎷'}, {letra: 'Z', emoji: '🦓'}
+        ];
+
+        familias.forEach(f => {
+            const card = document.createElement('div');
+            card.className = 'cartao-familia';
+            let botoesHtml = '';
+            const silabas = f.especial ? f.especial : ['A', 'E', 'I', 'O', 'U'].map(v => f.letra + v);
+            
+            silabas.forEach(silaba => {
+                botoesHtml += `<a href="fase.html?s=${silaba}" class="btn-silaba" onclick="somClique.play()">${silaba}</a>`;
+            });
+
+            card.innerHTML = `<div class="titulo-familia">Letra ${f.letra} ${f.emoji}</div><div class="botoes-silabas">${botoesHtml}</div>`;
+            grid.appendChild(card);
+        });
+
+        const lobo = document.getElementById('cursor-lobo');
+        document.addEventListener('mousemove', (e) => {
+            lobo.style.left = e.clientX + 'px';
+            lobo.style.top = e.clientY + 'px';
+            const peca = document.createElement('div');
+            peca.className = 'rastro-peca';
+            peca.style.left = (e.clientX - 22) + 'px';
+            peca.style.top = (e.clientY - 22) + 'px';
+            document.body.appendChild(peca);
+            setTimeout(() => peca.remove(), 1200);
+        });
+    </script>
+</body>
+</html>

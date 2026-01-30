@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parabéns! - Sílaba Viva</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            background: #FFD700; /* Cor de Ouro */
+            font-family: 'Arial Rounded MT Bold', sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .cartao-vitoria {
+            background: white;
+            padding: 40px;
+            border-radius: 40px;
+            box-shadow: 0 15px 0 #DAA520;
+            border: 8px solid #FFF;
+            max-width: 80%;
+        }
+
+        h1 {
+            color: #E67E22;
+            font-size: 60px;
+            margin: 0;
+            text-shadow: 3px 3px #FFE4B5;
+        }
+
+        .emoji-final {
+            font-size: 120px;
+            margin: 20px 0;
+        }
+
+        p {
+            font-size: 28px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .btn-recomecar {
+            background: #4ADE80;
+            color: white;
+            padding: 20px 40px;
+            font-size: 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 8px 0 #2D8A4E;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .btn-recomecar:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-recomecar:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #2D8A4E;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cartao-vitoria animate__animated animate__jackInTheBox">
+        <div class="emoji-final">🏆🌟🎈</div>
+        <h1>PARABÉNS!</h1>
+        <p>Você completou todas as sílabas e brilhou muito!</p>
+        <a href="index.html" class="btn-recomecar">JOGAR DE NOVO 🍎</a>
+    </div>
+
+    <script>
+        // Dispara confetes automaticamente ao carregar
+        function festa() {
+            var duration = 5 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                // Confetes de dois lados
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        // Fala de vitória
+        window.onload = () => {
+            festa();
+            const msg = new SpeechSynthesisUtterance("Parabéns! Você é um mestre das sílabas! Você completou o jogo!");
+            msg.lang = 'pt-BR';
+            window.speechSynthesis.speak(msg);
+        };
+    </script>
+</body>
+</html>
