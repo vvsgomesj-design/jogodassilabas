@@ -30,7 +30,7 @@
   "HO": { "emoji": "🥬", "palavra": "HORTA", "soma_texto": "H + O = HO", "fala_didatica": "O agá com o ó, fica óh! De... HORTA!", "cor_fundo": "#E8F5E9", "cor_contorno": "#2E7D32", "viewBox": "0 0 400 200", "caminhos": ["M 80 40 L 80 160 M 160 40 L 160 160 M 80 100 L 160 100", "M 320 40 A 60 60 0 1 1 319 40 Z"], "proximo": "HU" },
   "HU": { "emoji": "👤", "palavra": "HUMANO", "soma_texto": "H + U = HU", "fala_didatica": "O agá com o ú, fica úh! De HUMANO!", "cor_fundo": "#F5F5F5", "cor_contorno": "#424242", "viewBox": "0 0 400 200", "caminhos": ["M 80 40 L 80 160 M 160 40 L 160 160 M 80 100 L 160 100", "M 280 40 Q 280 160 320 160 Q 360 160 360 40"], "proximo": "JA" },
   "JA": { "emoji": "🐢", "palavra": "JABUTI", "soma_texto": "J + A = JA", "fala_didatica": "O jota com o á, forma o som jáh! De... JABUTI!", "cor_fundo": "#EFEBE9", "cor_contorno": "#4E342E", "viewBox": "0 0 400 200", "caminhos": ["M 140 40 L 140 140 Q 140 180 80 180", "M 280 160 L 320 40 L 360 160 M 300 120 L 340 120"], "proximo": "JE" },
-  "JE": { "emoji": "cruz.png", "palavra": "JEJUM", "soma_texto": "J + E = JE", "fala_didatica": "O jota com o ê, forma o som jêh! De JEJUM!", "cor_fundo": "#ECEFF1", "cor_contorno": "#455A64", "viewBox": "0 0 400 200", "caminhos": ["M 140 40 L 140 140 Q 140 180 80 180", "M 280 40 L 280 160 M 280 40 L 360 40 M 280 100 L 340 100 M 280 160 L 360 160"], "proximo": "JI" },
+  "JE": { "emoji": "jejum.png", "palavra": "JEJUM", "soma_texto": "J + E = JE", "fala_didatica": "O jota com o ê, forma o som jêh! De JEJUM!", "cor_fundo": "#ECEFF1", "cor_contorno": "#455A64", "viewBox": "0 0 400 200", "caminhos": ["M 140 40 L 140 140 Q 140 180 80 180", "M 280 40 L 280 160 M 280 40 L 360 40 M 280 100 L 340 100 M 280 160 L 360 160"], "proximo": "JI" },
   "JI": { "emoji": "🚗", "palavra": "JIPE", "soma_texto": "J + I = JI", "fala_didatica": "O jota com o ííí, forma o som jííí! De JIPE!", "cor_fundo": "#E3F2FD", "cor_contorno": "#1976D2", "viewBox": "0 0 400 200", "caminhos": ["M 140 40 L 140 140 Q 140 180 80 180", "M 320 40 L 320 160"], "proximo": "JO" },
   "JO": { "emoji": "💎", "palavra": "JOIA", "soma_texto": "J + O = JO", "fala_didatica": "O jota com o ó, forma o som jóh! De JOIA!", "cor_fundo": "#FFF9C4", "cor_contorno": "#F9A825", "viewBox": "0 0 400 200", "caminhos": ["M 140 40 L 140 140 Q 140 180 80 180", "M 320 40 A 60 60 0 1 1 319 40 Z"], "proximo": "JU" },
   "JU": { "emoji": "⚖️", "palavra": "JUIZ", "soma_texto": "J + U = JU", "fala_didatica": "O jota com o ú, forma o som juh! De JUIZ!", "cor_fundo": "#F5F5F5", "cor_contorno": "#424242", "viewBox": "0 0 400 200", "caminhos": ["M 140 40 L 140 140 Q 140 180 80 180", "M 280 40 Q 280 160 320 160 Q 360 160 360 40"], "proximo": "KA" },
@@ -95,6 +95,7 @@
   "ZU": { "emoji": "🐝", "palavra": "ZUMBIDO", "soma_texto": "Z + U = ZU", "fala_didatica": "O zê com o ú, forma o som zuh! De... ZUMBIDO! PARABÉNS! VOCÊ COMPLETOU TODAS AS MISSÕES!", "cor_fundo": "#FFFDE7", "cor_contorno": "#FBC02D", "viewBox": "0 0 400 200", "caminhos": ["M 60 40 L 160 40 L 60 160 L 160 160", "M 280 40 Q 280 160 320 160 Q 360 160 360 40"], "proximo": "FIM" }
 
 }
+
 
 
 
